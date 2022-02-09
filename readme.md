@@ -13,3 +13,6 @@ A simple GTK tetris game
 
 [image from https://tetris.fandom.com/wiki/Tetromino]
 
+## SCREENSHOT
+
+![screenshot](assets/screenshot.png)
