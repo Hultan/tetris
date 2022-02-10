@@ -9,20 +9,8 @@ func col(c uint32) float64 {
 	return float64(c) / 65535
 }
 
+// Rotate the 5x5 tetromino array 90 degrees
 func rotate(t *tetromino) {
-	// // Traverse each cycle
-	// for (int i = 0; i < N / 2; i++) {
-	// 	for (int j = i; j < N - i - 1; j++) {
-	//
-	// 		// Swap elements of each cycle
-	// 		// in clockwise direction
-	// 		int temp = a[i][j];
-	// 		a[i][j] = a[N - 1 - j][i];
-	// 		a[N - 1 - j][i] = a[N - 1 - i][N - 1 - j];
-	// 		a[N - 1 - i][N - 1 - j] = a[j][N - 1 - i];
-	// 		a[j][N - 1 - i] = temp;
-	// 	}
-	// }
 	for i := 0; i < 5/2; i++ {
 		for j := 0; j < 5-i-1; j++ {
 			tmp := t.blocks[i][j]
@@ -32,13 +20,9 @@ func rotate(t *tetromino) {
 			t.blocks[j][5-1-i] = tmp
 		}
 	}
-	// for i := 0; i < 4; i++ {
-	// 	for j := i + 1; j < 5; j++ {
-	// 		t.blocks[i][j], t.blocks[j][i] = t.blocks[j][i], t.blocks[i][j]
-	// 	}
-	// }
 }
 
+// Drop a new Tetromino
 func newFallingTetromino() {
 	r := rand.Intn(7)
 	falling = tetrominos[r]
@@ -46,15 +30,41 @@ func newFallingTetromino() {
 	posX = 3
 }
 
+// Convert playground coords to screen coords
 func coordsToScreenCoords(x, y int) (float64, float64) {
 	return float64(leftBorder + x*blockWidth), float64(topBorder + (19-y)*blockHeight)
 }
 
+// Debug function : Print the playground
 func printPlayground() {
 	fmt.Println()
 	fmt.Println("----------------")
 	fmt.Println()
 	for r := 0; r < 25; r++ {
 		fmt.Println(playground[r])
+	}
+}
+
+func adjustPosition() {
+	min, max := 0, 9
+	for y := 0; y < 5; y++ {
+		for x := 0; x < 5; x++ {
+			if !falling.blocks[y][x] {
+				continue
+			}
+			if posX+x < min {
+				min = posX + x
+			}
+			if posX+x > max {
+				max = posX + x
+			}
+		}
+	}
+
+	if min < 0 {
+		posX += -min
+	}
+	if max > 9 {
+		posX -= max - 9
 	}
 }

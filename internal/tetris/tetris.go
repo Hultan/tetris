@@ -39,7 +39,7 @@ func (t *Tetris) StartGame() {
 			case <-ticker.C:
 				posY -= 1
 				t.da.QueueDraw()
-				if t.checkBlock() {
+				if t.checkBlockBottomSide() {
 					newFallingTetromino()
 				}
 			case <-quitChannel:
