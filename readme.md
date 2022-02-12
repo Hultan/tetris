@@ -16,3 +16,11 @@ A simple GTK tetris game
 ## SCREENSHOT
 
 ![screenshot](assets/screenshot.png)
+
+## TODO
+
+* Speed (Completed rows/time/dropped tetrominos...)
+* Score (completed rows/time/dropped tetrominos...)
+* Movie piece at row 0
+* Quit should only quit the game, not the application
+* 

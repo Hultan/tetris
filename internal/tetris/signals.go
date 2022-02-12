@@ -15,22 +15,21 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 	switch key.KeyVal() {
 	case 97: // Button "A" => Move tetromino left
 		if !t.checkSideBlock(true) {
-			posX -= 1
+			t.posX -= 1
 		}
 	case 113: // Button "Q" => Quit game
-		if isPlaying {
-			close(quitChannel) // Stop ticker
+		if t.isPlaying {
+			close(t.tickerQuit) // Stop ticker
 		}
 		t.w.Close() // Close window
 	case 115: // Button "S" => Rotate tetromino
 		// Rotate every element except tetromino number 4 (the square)
-		if falling.id != 4 {
-			rotate(&falling)
-			adjustPosition()
+		if t.current.id != 4 {
+			t.rotateTetromin(&t.current)
 		}
 	case 100: // Button "D" => Move tetromino right
 		if !t.checkSideBlock(false) {
-			posX += 1
+			t.posX += 1
 		}
 	case 120: // Button "X" => Move tetromino down
 		// TODO : Speed up tetromino
@@ -43,7 +42,7 @@ func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	t.drawBackground(da, ctx)
 	t.drawPlayground(da, ctx)
 	t.drawFallenTetrominos(da, ctx)
-	t.drawFallingTetromino(da, ctx, falling)
+	t.drawFallingTetromino(da, ctx, t.current)
 }
 
 //
@@ -85,7 +84,7 @@ func (t *Tetris) drawPlayground(da *gtk.DrawingArea, ctx *cairo.Context) {
 func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 	for y := 0; y < 20; y++ {
 		for x := 0; x < 10; x++ {
-			idx := playground[y][x]
+			idx := t.playground[y][x]
 			if idx > 0 {
 				left, top := coordsToScreenCoords(x, y)
 				t.drawBlock(da, ctx, tetrominos[idx-1].color, left, top)
@@ -96,12 +95,15 @@ func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 // drawFallingTetromino : Draws the currently falling tetromino
 func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
-	left, top := coordsToScreenCoords(posX, posY)
+	left, top := coordsToScreenCoords(t.posX, t.posY)
 
 	for y := 0; y < 5; y++ {
 		for x := 0; x < 5; x++ {
 			if !tetro.blocks[y][x] {
 				continue
+			}
+			if t.posY-y > 19 {
+				return
 			}
 			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)
 		}
