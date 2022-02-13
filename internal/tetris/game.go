@@ -27,7 +27,7 @@ func (g *game) adjustPositionAfterRotate() {
 	min, max := 0, playfieldWidth-1
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
-			if !g.falling.tetro.blocks[y][x] {
+			if g.falling.tetro.blocks[y][x] == 0 {
 				continue
 			}
 			if g.falling.x+x < min {
@@ -86,7 +86,7 @@ func (g *game) checkPlayfieldSides(left bool) bool {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
-			if !g.falling.tetro.blocks[y][x] {
+			if g.falling.tetro.blocks[y][x] == 0 {
 				continue
 			}
 
@@ -111,7 +111,7 @@ func (g *game) checkPlayfieldBottom() bool {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
-			if !g.falling.tetro.blocks[y][x] {
+			if g.falling.tetro.blocks[y][x] == 0 {
 				continue
 			}
 
@@ -129,7 +129,7 @@ func (g *game) checkPlayfieldBottom() bool {
 func (g *game) moveFallingToPlayfield() {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
-			if g.falling.tetro.blocks[y][x] {
+			if g.falling.tetro.blocks[y][x] > 0 {
 				g.playfield[g.falling.y-y][g.falling.x+x] = g.falling.tetro.id
 			}
 		}

@@ -79,7 +79,7 @@ func (g *game) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tet
 
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoHeight; x++ {
-			if !tetro.blocks[y][x] {
+			if tetro.blocks[y][x] == 0 {
 				continue
 			}
 			if g.falling.y-y > playfieldVisibleHeight-1 {
