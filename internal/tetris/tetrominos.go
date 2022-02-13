@@ -15,10 +15,10 @@ var tetrominos = [tetrominoCount]tetromino{
 		id:    1,
 		color: color.RGBA{R: 0, G: 255, B: 255, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]int{
-			{0, 0, 1, 0},
-			{0, 0, 2, 0},
-			{0, 0, 1, 0},
-			{0, 0, 1, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0},
+			{1, 1, 2, 1},
+			{0, 0, 0, 0},
 		},
 	},
 	{
@@ -26,9 +26,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 0, G: 0, B: 255, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]int{
 			{0, 0, 0, 0},
-			{0, 1, 0, 0},
-			{0, 1, 2, 1},
-			{0, 0, 0, 0},
+			{0, 0, 1, 0},
+			{0, 0, 2, 0},
+			{0, 1, 1, 0},
 		},
 	},
 	{
@@ -36,9 +36,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 255, G: 128, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]int{
 			{0, 0, 0, 0},
-			{0, 0, 0, 1},
-			{0, 1, 2, 1},
-			{0, 0, 0, 0},
+			{0, 1, 0, 0},
+			{0, 2, 0, 0},
+			{0, 1, 1, 0},
 		},
 	},
 	{
@@ -56,8 +56,8 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 0, G: 255, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]int{
 			{0, 0, 0, 0},
-			{0, 0, 2, 1},
-			{0, 1, 1, 0},
+			{0, 0, 1, 1},
+			{0, 1, 2, 0},
 			{0, 0, 0, 0},
 		},
 	},
@@ -76,14 +76,14 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 255, G: 0, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]int{
 			{0, 0, 0, 0},
-			{0, 1, 2, 0},
-			{0, 0, 1, 1},
+			{0, 1, 1, 0},
+			{0, 0, 2, 1},
 			{0, 0, 0, 0},
 		},
 	},
 }
 
-func (t *tetromino) getCenter() (int, int) {
+func (t *tetromino) getRotationCenter() (int, int) {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			if t.blocks[y][x] == 2 {

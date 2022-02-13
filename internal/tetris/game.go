@@ -64,7 +64,7 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 		return
 	}
 
-	cx, cy := g.falling.tetro.getCenter()
+	cx, cy := g.falling.tetro.getRotationCenter()
 
 	// Rotate the tetromino array 90 degrees
 	for y := 0; y < tetrominoHeight/2; y++ {
@@ -77,7 +77,7 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 		}
 	}
 
-	xx, yy := g.falling.tetro.getCenter()
+	xx, yy := g.falling.tetro.getRotationCenter()
 
 	g.falling.x += cx - xx
 	g.falling.y -= cy - yy
