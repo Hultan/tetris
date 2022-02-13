@@ -4,39 +4,15 @@ import (
 	"image/color"
 
 	"github.com/gotk3/gotk3/cairo"
-	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
-
-// onKeyPressed : The onKeyPressed signal handler
-func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
-	key := gdk.EventKeyNewFromEvent(e)
-
-	switch key.KeyVal() {
-	case 97: // Button "A" => Move tetromino left
-		if !t.checkSideBlock(true) {
-			t.falling.x -= 1
-		}
-	case 113: // Button "Q" => Quit game
-		t.quitGame()
-	case 115: // Button "S" => Rotate tetromino
-		t.rotateTetromino(&t.falling.tetro)
-	case 100: // Button "D" => Move tetromino right
-		if !t.checkSideBlock(false) {
-			t.falling.x += 1
-		}
-	case 120: // Button "X" => Move tetromino down
-		// TODO : Speed up tetromino
-	}
-	t.da.QueueDraw()
-}
 
 // onDraw : The onDraw signal handler
 func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	t.drawBackground(da, ctx)
 	t.drawPlayfield(da, ctx)
 	t.drawFallenTetrominos(da, ctx)
-	t.drawFallingTetromino(da, ctx, t.falling.tetro)
+	t.drawFallingTetromino(da, ctx, t.game.falling.tetro)
 }
 
 //
@@ -78,7 +54,7 @@ func (t *Tetris) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 	for y := 0; y < playfieldVisibleHeight; y++ {
 		for x := 0; x < playfieldVisibleWidth; x++ {
-			idx := t.playfield[y][x]
+			idx := t.game.playfield[y][x]
 			if idx > 0 {
 				left, top := coordsToScreenCoords(x, y)
 				t.drawBlock(da, ctx, tetrominos[idx-1].color, left, top)
@@ -89,15 +65,15 @@ func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 // drawFallingTetromino : Draws the currently falling tetromino
 func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
-	left, top := coordsToScreenCoords(t.falling.x, t.falling.y)
+	left, top := coordsToScreenCoords(t.game.falling.x, t.game.falling.y)
 
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoHeight; x++ {
 			if !tetro.blocks[y][x] {
 				continue
 			}
-			if t.falling.y-y > playfieldVisibleHeight-1 {
-				return
+			if t.game.falling.y-y > playfieldVisibleHeight-1 {
+				continue
 			}
 			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)
 		}

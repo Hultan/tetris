@@ -1,26 +1,26 @@
 package tetris
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
+	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
 )
 
 type Tetris struct {
-	w  *gtk.ApplicationWindow
-	da *gtk.DrawingArea
+	window      *gtk.ApplicationWindow
+	drawingArea *gtk.DrawingArea
 
-	game game
+	game *game
+}
 
+type game struct {
+	speed     time.Duration
 	isActive  bool
 	playfield [playfieldHeight][playfieldWidth]int
 	falling   fallingTetromino
 	ticker    ticker
-}
-
-type game struct {
 }
 
 type fallingTetromino struct {
@@ -34,31 +34,33 @@ type ticker struct {
 }
 
 func NewTetris(w *gtk.ApplicationWindow, da *gtk.DrawingArea) *Tetris {
-	t := &Tetris{w: w, da: da}
-	t.w.Connect("key-press-event", t.onKeyPressed)
-	t.da.Connect("draw", t.onDraw)
+	t := &Tetris{window: w, drawingArea: da}
+	t.window.Connect("key-press-event", t.onKeyPressed)
+	t.drawingArea.Connect("draw", t.onDraw)
 	return t
 }
 
 func (t *Tetris) StartGame() {
-	t.isActive = true
+	t.game = &game{}
+	t.game.isActive = true
 	rand.Seed(time.Now().UnixNano())
 	t.createNewFallingTetromino()
+	t.game.speed = 500
 
-	t.ticker.ticker = time.NewTicker(500 * time.Millisecond)
-	t.ticker.tickerQuit = make(chan struct{})
+	t.game.ticker.ticker = time.NewTicker(t.game.speed * time.Millisecond)
+	t.game.ticker.tickerQuit = make(chan struct{})
 	go func() {
 		for {
 			select {
-			case <-t.ticker.ticker.C:
-				t.falling.y -= 1
-				t.da.QueueDraw()
-				if t.checkBlockBottomSide() {
+			case <-t.game.ticker.ticker.C:
+				t.game.falling.y -= 1
+				t.drawingArea.QueueDraw()
+				if t.checkPlayfieldBottom() {
 					t.createNewFallingTetromino()
 				}
-			case <-t.ticker.tickerQuit:
-				t.isActive = false
-				t.ticker.ticker.Stop()
+			case <-t.game.ticker.tickerQuit:
+				t.game.isActive = false
+				t.game.ticker.ticker.Stop()
 				return
 			}
 		}
@@ -66,66 +68,32 @@ func (t *Tetris) StartGame() {
 }
 
 func (t *Tetris) quitGame() {
-	if t.isActive {
-		close(t.ticker.tickerQuit) // Stop ticker
+	if t.game.isActive {
+		t.game.isActive = false
+		close(t.game.ticker.tickerQuit) // Stop ticker
 	}
-	t.w.Close() // Close window
+	t.window.Close() // Close window
 }
 
-func (t *Tetris) adjustPositionAfterRotate() {
-	min, max := 0, playfieldWidth-1
-	for y := 0; y < tetrominoHeight; y++ {
-		for x := 0; x < tetrominoWidth; x++ {
-			if !t.falling.tetro.blocks[y][x] {
-				continue
-			}
-			if t.falling.x+x < min {
-				min = t.falling.x + x
-			}
-			if t.falling.x+x > max {
-				max = t.falling.x + x
-			}
+// onKeyPressed : The onKeyPressed signal handler
+func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
+	key := gdk.EventKeyNewFromEvent(e)
+
+	switch key.KeyVal() {
+	case 97: // Button "A" => Move tetromino left
+		if !t.checkPlayfieldSides(true) {
+			t.game.falling.x -= 1
 		}
-	}
-
-	if min < 0 {
-		t.falling.x += -min
-	}
-	if max > playfieldWidth-1 {
-		t.falling.x -= max - (playfieldWidth - 1)
-	}
-}
-
-// Drop a new Tetromino
-func (t *Tetris) createNewFallingTetromino() {
-	r := rand.Intn(tetrominoCount)
-	t.falling.tetro = tetrominos[r]
-	t.falling.y = playfieldHeight - 1
-	t.falling.x = (playfieldWidth - tetrominoWidth) / 2
-}
-
-// Rotate the 4x4 tetromino array 90 degrees
-// https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/
-func (t *Tetris) rotateTetromino(tetro *tetromino) {
-	for y := 0; y < tetrominoHeight/2; y++ {
-		for x := y; x < tetrominoWidth-y-1; x++ {
-			tmp := tetro.blocks[y][x]
-			tetro.blocks[y][x] = tetro.blocks[tetrominoHeight-1-x][y]
-			tetro.blocks[tetrominoHeight-1-x][y] = tetro.blocks[tetrominoHeight-1-y][tetrominoWidth-1-x]
-			tetro.blocks[tetrominoHeight-1-y][tetrominoWidth-1-x] = tetro.blocks[x][tetrominoWidth-1-y]
-			tetro.blocks[x][tetrominoWidth-1-y] = tmp
+	case 113: // Button "Q" => Quit game
+		t.quitGame()
+	case 115: // Button "S" => Rotate tetromino
+		t.rotateTetromino(&t.game.falling.tetro)
+	case 100: // Button "D" => Move tetromino right
+		if !t.checkPlayfieldSides(false) {
+			t.game.falling.x += 1
 		}
+	case 120: // Button "X" => Move tetromino down
+		t.dropTetromino()
 	}
-
-	t.adjustPositionAfterRotate()
-}
-
-// Debug function : Print the playfield
-func (t *Tetris) printPlayfield() {
-	fmt.Println()
-	fmt.Println("----------------")
-	fmt.Println()
-	for r := 0; r < playfieldHeight; r++ {
-		fmt.Println(t.playfield[r])
-	}
+	t.drawingArea.QueueDraw()
 }
