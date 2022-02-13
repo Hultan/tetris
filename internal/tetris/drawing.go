@@ -8,11 +8,11 @@ import (
 )
 
 // onDraw : The onDraw signal handler
-func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
-	t.drawBackground(da, ctx)
-	t.drawPlayfield(da, ctx)
-	t.drawFallenTetrominos(da, ctx)
-	t.drawFallingTetromino(da, ctx, t.game.falling.tetro)
+func (g *game) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
+	g.drawBackground(da, ctx)
+	g.drawPlayfield(da, ctx)
+	g.drawFallenTetrominos(da, ctx)
+	g.drawFallingTetromino(da, ctx, g.falling.tetro)
 }
 
 //
@@ -20,7 +20,7 @@ func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 //
 
 // drawBackground : Draws the background
-func (t *Tetris) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
+func (g *game) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
 	width := float64(da.GetAllocatedWidth())
 	height := float64(da.GetAllocatedHeight())
 	ctx.SetSourceRGB(0.4, 0.4, 1)
@@ -29,9 +29,15 @@ func (t *Tetris) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
 }
 
 // drawPlayfield : Draws the playfield background
-func (t *Tetris) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
+func (g *game) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 	ctx.SetSourceRGBA(1, 1, 1, 1)
-	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 20*blockHeight)
+	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 22*blockHeight)
+	ctx.Fill()
+	ctx.SetSourceRGBA(1, 0.5, 0, 0.5)
+	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 5*blockHeight)
+	ctx.Fill()
+	ctx.SetSourceRGBA(1, 0, 0, 0.5)
+	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 2*blockHeight)
 	ctx.Fill()
 
 	ctx.SetSourceRGBA(0.5, 0.5, 0.5, 1)
@@ -39,7 +45,7 @@ func (t *Tetris) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 	for i := 0; i < playfieldWidth; i++ {
 		// Vertical lines
 		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth), topBorder)
-		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth), topBorder+20*blockHeight)
+		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth), topBorder+playfieldVisibleHeight*blockHeight)
 		ctx.Stroke()
 	}
 	for i := 0; i < playfieldVisibleHeight; i++ {
@@ -51,40 +57,44 @@ func (t *Tetris) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 }
 
 // drawFallenTetrominos : Draws the tetrominos the have already fallen to the "ground"
-func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
+func (g *game) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 	for y := 0; y < playfieldVisibleHeight; y++ {
 		for x := 0; x < playfieldVisibleWidth; x++ {
-			idx := t.game.playfield[y][x]
+			idx := g.playfield[y][x]
 			if idx > 0 {
 				left, top := coordsToScreenCoords(x, y)
-				t.drawBlock(da, ctx, tetrominos[idx-1].color, left, top)
+				if y >= playfieldLoosingHeight {
+					// Game over
+					g.quit()
+				}
+				g.drawBlock(da, ctx, tetrominos[idx-1].color, left, top)
 			}
 		}
 	}
 }
 
 // drawFallingTetromino : Draws the currently falling tetromino
-func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
-	left, top := coordsToScreenCoords(t.game.falling.x, t.game.falling.y)
+func (g *game) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
+	left, top := coordsToScreenCoords(g.falling.x, g.falling.y)
 
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoHeight; x++ {
 			if !tetro.blocks[y][x] {
 				continue
 			}
-			if t.game.falling.y-y > playfieldVisibleHeight-1 {
+			if g.falling.y-y > playfieldVisibleHeight-1 {
 				continue
 			}
-			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)
+			g.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)
 		}
 	}
 }
 
 // drawBlock : Draws a single block
-func (t *Tetris) drawBlock(_ *gtk.DrawingArea, ctx *cairo.Context, c color.Color, left, top float64) {
+func (g *game) drawBlock(_ *gtk.DrawingArea, ctx *cairo.Context, c color.Color, left, top float64) {
 	// Fill block in the correct color
-	r, g, b, a := c.RGBA()
-	ctx.SetSourceRGBA(col(r), col(g), col(b), col(a))
+	red, green, blue, alpha := c.RGBA()
+	ctx.SetSourceRGBA(col(red), col(green), col(blue), col(alpha))
 	ctx.Rectangle(left, top, blockWidth, blockHeight)
 	ctx.Fill()
 
