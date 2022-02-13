@@ -20,10 +20,7 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 	case 113: // Button "Q" => Quit game
 		t.quitGame()
 	case 115: // Button "S" => Rotate tetromino
-		// Rotate every element except tetromino number 4 (the square)
-		if t.falling.tetro.id != 4 {
-			t.rotateTetromin(&t.falling.tetro)
-		}
+		t.rotateTetromino(&t.falling.tetro)
 	case 100: // Button "D" => Move tetromino right
 		if !t.checkSideBlock(false) {
 			t.falling.x += 1
@@ -63,13 +60,13 @@ func (t *Tetris) drawPlayground(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 	ctx.SetSourceRGBA(0.5, 0.5, 0.5, 1)
 	ctx.SetLineWidth(1)
-	for i := 0; i < 10; i++ {
+	for i := 0; i < playgroundWidth; i++ {
 		// Vertical lines
 		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth), topBorder)
 		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth), topBorder+20*blockHeight)
 		ctx.Stroke()
 	}
-	for i := 0; i < 20; i++ {
+	for i := 0; i < playgroundVisibleHeight; i++ {
 		// Horizontal lines
 		ctx.MoveTo(leftBorder, float64(topBorder+(i+1)*blockHeight))
 		ctx.LineTo(leftBorder+10*blockWidth, float64(topBorder+(i+1)*blockHeight))
@@ -79,8 +76,8 @@ func (t *Tetris) drawPlayground(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 // drawFallenTetrominos : Draws the tetrominos the have already fallen to the ground
 func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
-	for y := 0; y < 20; y++ {
-		for x := 0; x < 10; x++ {
+	for y := 0; y < playgroundVisibleHeight; y++ {
+		for x := 0; x < playgroundVisibleWidth; x++ {
 			idx := t.playground[y][x]
 			if idx > 0 {
 				left, top := coordsToScreenCoords(x, y)
@@ -94,12 +91,12 @@ func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
 	left, top := coordsToScreenCoords(t.falling.x, t.falling.y)
 
-	for y := 0; y < 5; y++ {
-		for x := 0; x < 5; x++ {
+	for y := 0; y < tetrominoHeight; y++ {
+		for x := 0; x < tetrominoHeight; x++ {
 			if !tetro.blocks[y][x] {
 				continue
 			}
-			if t.falling.y-y > 19 {
+			if t.falling.y-y > playgroundVisibleHeight-1 {
 				return
 			}
 			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)

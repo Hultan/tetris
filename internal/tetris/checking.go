@@ -1,8 +1,8 @@
 package tetris
 
 func (t *Tetris) checkBlockBottomSide() bool {
-	for y := 0; y < 5; y++ {
-		for x := 0; x < 5; x++ {
+	for y := 0; y < tetrominoHeight; y++ {
+		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
 			if !t.falling.tetro.blocks[y][x] {
 				continue
@@ -20,8 +20,8 @@ func (t *Tetris) checkBlockBottomSide() bool {
 }
 
 func (t *Tetris) checkSideBlock(left bool) bool {
-	for y := 0; y < 5; y++ {
-		for x := 0; x < 5; x++ {
+	for y := 0; y < tetrominoHeight; y++ {
+		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
 			if !t.falling.tetro.blocks[y][x] {
 				continue
@@ -35,7 +35,7 @@ func (t *Tetris) checkSideBlock(left bool) bool {
 
 			// check if right wall is blocking or
 			// if a piece is blocking to the right
-			if !left && (t.falling.x+x == 9 || t.checkPlayground(t.falling.x+x+1, t.falling.y-y)) {
+			if !left && (t.falling.x+x == playgroundWidth-1 || t.checkPlayground(t.falling.x+x+1, t.falling.y-y)) {
 				return true
 			}
 		}
@@ -45,15 +45,15 @@ func (t *Tetris) checkSideBlock(left bool) bool {
 }
 
 func (t *Tetris) checkPlayground(x, y int) bool {
-	if x < 0 || x > 9 || y < 0 {
+	if x < 0 || x >= playgroundWidth || y < 0 {
 		return false
 	}
 	return t.playground[y][x] > 0
 }
 
 func (t *Tetris) moveFallingToFallen() {
-	for y := 0; y < 5; y++ {
-		for x := 0; x < 5; x++ {
+	for y := 0; y < tetrominoHeight; y++ {
+		for x := 0; x < tetrominoWidth; x++ {
 			if t.falling.tetro.blocks[y][x] {
 				t.playground[t.falling.y-y][t.falling.x+x] = t.falling.tetro.id
 			}
@@ -63,11 +63,12 @@ func (t *Tetris) moveFallingToFallen() {
 }
 
 func (t *Tetris) removeCompleteRows() {
-	for y := 0; y < len(t.playground); y++ {
+	for y := 0; y < playgroundHeight; y++ {
 		rowComplete := true
-		for x := 0; x < 9; x++ {
+		for x := 0; x < playgroundWidth; x++ {
 			if t.playground[y][x] == 0 {
 				rowComplete = false
+				continue
 			}
 		}
 		if rowComplete {
@@ -77,11 +78,11 @@ func (t *Tetris) removeCompleteRows() {
 }
 
 func (t *Tetris) deleteRow(d int) {
-	for y := d; y < len(t.playground); y++ {
-		for x := 0; x < 9; x++ {
+	for y := d; y < playgroundHeight; y++ {
+		for x := 0; x < playgroundWidth; x++ {
 			// To delete a row, copy the value from the row above
 			// except for the top row, who should have zeroes
-			if y == 24 {
+			if y == playgroundHeight-1 {
 				t.playground[y][x] = 0
 			} else {
 				t.playground[y][x] = t.playground[y+1][x]
