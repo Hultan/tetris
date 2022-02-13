@@ -19,8 +19,9 @@ A simple GTK tetris game
 
 ## TODO
 
-* Speed (Completed rows/time/dropped tetrominos...)
-* Score (completed rows/time/dropped tetrominos...)
-* Movie piece at row 0
-* Quit should only quit the game, not the application
-* 
+* TODO : Speed (Completed rows/time/dropped tetrominos...)
+* TODO : Score (completed rows/time/dropped tetrominos...)
+* TODO : Quit should only quit the game, not the application
+* BUG : You should be able to move a piece at row 0
+* BUG : Occasionally after rotation the tetrominos overlap  
+* BUG : There is no working stop function when the fallen tetrominos go over lvl 20
