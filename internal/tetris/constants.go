@@ -7,13 +7,12 @@ const (
 	leftBorder = 30
 	topBorder  = 30
 
-	playgroundWidth         = 10
-	playgroundVisibleWidth  = 10
-	playgroundHeight        = 25
-	playgroundVisibleHeight = 20
+	playfieldWidth         = 10
+	playfieldVisibleWidth  = 10
+	playfieldHeight        = 24
+	playfieldVisibleHeight = 20
 
+	tetrominoCount  = 7
 	tetrominoWidth  = 4
 	tetrominoHeight = 4
-
-	tetrominoCount = 7
 )

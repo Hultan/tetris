@@ -14,10 +14,10 @@ type Tetris struct {
 
 	game game
 
-	isActive   bool
-	playground [playgroundHeight][playgroundWidth]int
-	falling    fallingTetromino
-	ticker     ticker
+	isActive  bool
+	playfield [playfieldHeight][playfieldWidth]int
+	falling   fallingTetromino
+	ticker    ticker
 }
 
 type game struct {
@@ -73,7 +73,7 @@ func (t *Tetris) quitGame() {
 }
 
 func (t *Tetris) adjustPositionAfterRotate() {
-	min, max := 0, playgroundWidth-1
+	min, max := 0, playfieldWidth-1
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			if !t.falling.tetro.blocks[y][x] {
@@ -91,8 +91,8 @@ func (t *Tetris) adjustPositionAfterRotate() {
 	if min < 0 {
 		t.falling.x += -min
 	}
-	if max > playgroundWidth-1 {
-		t.falling.x -= max - (playgroundWidth - 1)
+	if max > playfieldWidth-1 {
+		t.falling.x -= max - (playfieldWidth - 1)
 	}
 }
 
@@ -100,8 +100,8 @@ func (t *Tetris) adjustPositionAfterRotate() {
 func (t *Tetris) createNewFallingTetromino() {
 	r := rand.Intn(tetrominoCount)
 	t.falling.tetro = tetrominos[r]
-	t.falling.y = playgroundHeight - 1
-	t.falling.x = (playgroundWidth - tetrominoWidth) / 2
+	t.falling.y = playfieldHeight - 1
+	t.falling.x = (playfieldWidth - tetrominoWidth) / 2
 }
 
 // Rotate the 4x4 tetromino array 90 degrees
@@ -120,12 +120,12 @@ func (t *Tetris) rotateTetromino(tetro *tetromino) {
 	t.adjustPositionAfterRotate()
 }
 
-// Debug function : Print the playground
-func (t *Tetris) printPlayground() {
+// Debug function : Print the playfield
+func (t *Tetris) printPlayfield() {
 	fmt.Println()
 	fmt.Println("----------------")
 	fmt.Println()
-	for r := 0; r < playgroundHeight; r++ {
-		fmt.Println(t.playground[r])
+	for r := 0; r < playfieldHeight; r++ {
+		fmt.Println(t.playfield[r])
 	}
 }

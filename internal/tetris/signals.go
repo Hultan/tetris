@@ -34,7 +34,7 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 // onDraw : The onDraw signal handler
 func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	t.drawBackground(da, ctx)
-	t.drawPlayground(da, ctx)
+	t.drawPlayfield(da, ctx)
 	t.drawFallenTetrominos(da, ctx)
 	t.drawFallingTetromino(da, ctx, t.falling.tetro)
 }
@@ -52,21 +52,21 @@ func (t *Tetris) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
 	ctx.Fill()
 }
 
-// drawPlayground : Draws the playground background
-func (t *Tetris) drawPlayground(da *gtk.DrawingArea, ctx *cairo.Context) {
+// drawPlayfield : Draws the playfield background
+func (t *Tetris) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 	ctx.SetSourceRGBA(1, 1, 1, 1)
 	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 20*blockHeight)
 	ctx.Fill()
 
 	ctx.SetSourceRGBA(0.5, 0.5, 0.5, 1)
 	ctx.SetLineWidth(1)
-	for i := 0; i < playgroundWidth; i++ {
+	for i := 0; i < playfieldWidth; i++ {
 		// Vertical lines
 		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth), topBorder)
 		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth), topBorder+20*blockHeight)
 		ctx.Stroke()
 	}
-	for i := 0; i < playgroundVisibleHeight; i++ {
+	for i := 0; i < playfieldVisibleHeight; i++ {
 		// Horizontal lines
 		ctx.MoveTo(leftBorder, float64(topBorder+(i+1)*blockHeight))
 		ctx.LineTo(leftBorder+10*blockWidth, float64(topBorder+(i+1)*blockHeight))
@@ -74,11 +74,11 @@ func (t *Tetris) drawPlayground(da *gtk.DrawingArea, ctx *cairo.Context) {
 	}
 }
 
-// drawFallenTetrominos : Draws the tetrominos the have already fallen to the ground
+// drawFallenTetrominos : Draws the tetrominos the have already fallen to the "ground"
 func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
-	for y := 0; y < playgroundVisibleHeight; y++ {
-		for x := 0; x < playgroundVisibleWidth; x++ {
-			idx := t.playground[y][x]
+	for y := 0; y < playfieldVisibleHeight; y++ {
+		for x := 0; x < playfieldVisibleWidth; x++ {
+			idx := t.playfield[y][x]
 			if idx > 0 {
 				left, top := coordsToScreenCoords(x, y)
 				t.drawBlock(da, ctx, tetrominos[idx-1].color, left, top)
@@ -96,7 +96,7 @@ func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, t
 			if !tetro.blocks[y][x] {
 				continue
 			}
-			if t.falling.y-y > playgroundVisibleHeight-1 {
+			if t.falling.y-y > playfieldVisibleHeight-1 {
 				return
 			}
 			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)

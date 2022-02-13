@@ -26,9 +26,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 0, G: 0, B: 255, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
+			{false, false, false, false},
 			{false, true, false, false},
 			{false, true, true, true},
-			{false, false, false, false},
 		},
 	},
 	{
@@ -36,9 +36,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 255, G: 128, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
+			{false, false, false, false},
 			{false, false, false, true},
 			{false, true, true, true},
-			{false, false, false, false},
 		},
 	},
 	{
@@ -46,9 +46,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 255, G: 255, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
-			{false, true, true, false},
-			{false, true, true, false},
 			{false, false, false, false},
+			{false, true, true, false},
+			{false, true, true, false},
 		},
 	},
 	{
@@ -56,9 +56,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 0, G: 255, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
+			{false, false, false, false},
 			{false, false, true, true},
 			{false, true, true, false},
-			{false, false, false, false},
 		},
 	},
 	{
@@ -66,9 +66,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 200, G: 100, B: 200, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
+			{false, false, false, false},
 			{false, false, true, false},
 			{false, true, true, true},
-			{false, false, false, false},
 		},
 	},
 	{
@@ -76,9 +76,9 @@ var tetrominos = [tetrominoCount]tetromino{
 		color: color.RGBA{R: 255, G: 0, B: 0, A: 255},
 		blocks: [tetrominoHeight][tetrominoWidth]bool{
 			{false, false, false, false},
+			{false, false, false, false},
 			{false, true, true, false},
 			{false, false, true, true},
-			{false, false, false, false},
 		},
 	},
 }
