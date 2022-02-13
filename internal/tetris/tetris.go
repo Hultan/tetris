@@ -92,7 +92,7 @@ func (t *Tetris) adjustPositionAfterRotate() {
 		t.falling.x += -min
 	}
 	if max > playgroundWidth-1 {
-		t.falling.x -= max - playgroundWidth - 1
+		t.falling.x -= max - (playgroundWidth - 1)
 	}
 }
 
@@ -105,6 +105,7 @@ func (t *Tetris) createNewFallingTetromino() {
 }
 
 // Rotate the 4x4 tetromino array 90 degrees
+// https://www.geeksforgeeks.org/rotate-a-matrix-by-90-degree-in-clockwise-direction-without-using-any-extra-space/
 func (t *Tetris) rotateTetromino(tetro *tetromino) {
 	for y := 0; y < tetrominoHeight/2; y++ {
 		for x := y; x < tetrominoWidth-y-1; x++ {

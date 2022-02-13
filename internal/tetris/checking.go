@@ -73,6 +73,7 @@ func (t *Tetris) removeCompleteRows() {
 		}
 		if rowComplete {
 			t.deleteRow(y)
+			y -= 1
 		}
 	}
 }
