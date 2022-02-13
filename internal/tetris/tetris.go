@@ -35,11 +35,11 @@ func (t *Tetris) StartGame() {
 		for {
 			select {
 			case <-t.game.ticker.ticker.C:
-				t.game.falling.y -= 1
 				t.drawingArea.QueueDraw()
 				if t.game.checkPlayfieldBottom() {
 					t.game.createNewFallingTetromino()
 				}
+				t.game.falling.y -= 1
 			case <-t.game.ticker.tickerQuit:
 				t.game.isActive = false
 				t.game.ticker.ticker.Stop()

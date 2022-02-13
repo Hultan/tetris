@@ -21,6 +21,5 @@ A simple GTK tetris game
 
 * TODO : Speed (Increase with completed rows/time/dropped tetrominos...)
 * TODO : Score (Increase with completed rows/time/dropped tetrominos...)
-* BUG : You should be able to move a piece at row 0
-* BUG : Occasionally after rotation the tetrominos overlap, need canRotate function  
+* BUG : Occasionally after rotation the tetrominos overlap, need a canRotate() function  
  

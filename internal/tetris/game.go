@@ -51,7 +51,7 @@ func (g *game) adjustPositionAfterRotate() {
 func (g *game) createNewFallingTetromino() {
 	r := rand.Intn(tetrominoCount)
 	g.falling.tetro = tetrominos[r]
-	g.falling.y = playfieldHeight - 1
+	g.falling.y = playfieldVisibleHeight + tetrominoHeight - 1
 	g.falling.x = (playfieldWidth - tetrominoWidth) / 2
 	g.speed -= 10
 }
