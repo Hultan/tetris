@@ -98,7 +98,7 @@ func (t *Tetris) adjustPositionAfterRotate() {
 
 // Drop a new Tetromino
 func (t *Tetris) createNewFallingTetromino() {
-	r := 0 // rand.Intn(tetrominoCount)
+	r := rand.Intn(tetrominoCount)
 	t.falling.tetro = tetrominos[r]
 	t.falling.y = playgroundHeight - 1
 	t.falling.x = (playgroundWidth - tetrominoWidth) / 2
