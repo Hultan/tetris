@@ -92,6 +92,13 @@ func (t *Tetris) deletePlayfieldRow(d int) {
 	}
 }
 
+func (t *Tetris) dropTetrominoToPlayfield() {
+	for !t.checkPlayfieldBottom() {
+		t.game.falling.y -= 1
+	}
+	t.createNewFallingTetromino()
+}
+
 //
 // // Debug function : Print the playfield
 // func (t *Tetris) printPlayfield() {

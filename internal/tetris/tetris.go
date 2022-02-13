@@ -93,7 +93,7 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 			t.game.falling.x += 1
 		}
 	case 120: // Button "X" => Move tetromino down
-		t.dropTetromino()
+		t.dropTetrominoToPlayfield()
 	}
 	t.drawingArea.QueueDraw()
 }

@@ -25,3 +25,5 @@ A simple GTK tetris game
 * BUG : You should be able to move a piece at row 0
 * BUG : Occasionally after rotation the tetrominos overlap  
 * BUG : There is no working stop function when the fallen tetrominos go over lvl 20
+* BUG : Rotation should occur around a center block
+ 

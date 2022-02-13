@@ -52,10 +52,3 @@ func (t *Tetris) rotateTetromino(tetro *tetromino) {
 
 	t.adjustPositionAfterRotate()
 }
-
-func (t *Tetris) dropTetromino() {
-	for !t.checkPlayfieldBottom() {
-		t.game.falling.y -= 1
-	}
-	t.createNewFallingTetromino()
-}
