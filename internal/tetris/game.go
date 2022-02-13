@@ -64,6 +64,9 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 		return
 	}
 
+	cx, cy := g.falling.tetro.getCenter()
+
+	// Rotate the tetromino array 90 degrees
 	for y := 0; y < tetrominoHeight/2; y++ {
 		for x := y; x < tetrominoWidth-y-1; x++ {
 			tmp := tetro.blocks[y][x]
@@ -73,6 +76,11 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 			tetro.blocks[x][tetrominoWidth-1-y] = tmp
 		}
 	}
+
+	xx, yy := g.falling.tetro.getCenter()
+
+	g.falling.x += cx - xx
+	g.falling.y -= cy - yy
 }
 
 func (g *game) checkPlayfieldLimits(x, y int) bool {
