@@ -15,21 +15,18 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 	switch key.KeyVal() {
 	case 97: // Button "A" => Move tetromino left
 		if !t.checkSideBlock(true) {
-			t.posX -= 1
+			t.falling.x -= 1
 		}
 	case 113: // Button "Q" => Quit game
-		if t.isPlaying {
-			close(t.tickerQuit) // Stop ticker
-		}
-		t.w.Close() // Close window
+		t.quitGame()
 	case 115: // Button "S" => Rotate tetromino
 		// Rotate every element except tetromino number 4 (the square)
-		if t.current.id != 4 {
-			t.rotateTetromin(&t.current)
+		if t.falling.tetro.id != 4 {
+			t.rotateTetromin(&t.falling.tetro)
 		}
 	case 100: // Button "D" => Move tetromino right
 		if !t.checkSideBlock(false) {
-			t.posX += 1
+			t.falling.x += 1
 		}
 	case 120: // Button "X" => Move tetromino down
 		// TODO : Speed up tetromino
@@ -42,7 +39,7 @@ func (t *Tetris) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	t.drawBackground(da, ctx)
 	t.drawPlayground(da, ctx)
 	t.drawFallenTetrominos(da, ctx)
-	t.drawFallingTetromino(da, ctx, t.current)
+	t.drawFallingTetromino(da, ctx, t.falling.tetro)
 }
 
 //
@@ -95,14 +92,14 @@ func (t *Tetris) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 // drawFallingTetromino : Draws the currently falling tetromino
 func (t *Tetris) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
-	left, top := coordsToScreenCoords(t.posX, t.posY)
+	left, top := coordsToScreenCoords(t.falling.x, t.falling.y)
 
 	for y := 0; y < 5; y++ {
 		for x := 0; x < 5; x++ {
 			if !tetro.blocks[y][x] {
 				continue
 			}
-			if t.posY-y > 19 {
+			if t.falling.y-y > 19 {
 				return
 			}
 			t.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)

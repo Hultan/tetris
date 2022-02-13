@@ -12,10 +12,23 @@ type Tetris struct {
 	w  *gtk.ApplicationWindow
 	da *gtk.DrawingArea
 
-	isPlaying  bool
+	game game
+
+	isActive   bool
 	playground [25][10]int
-	current    tetromino
-	posX, posY int
+	falling    fallingTetromino
+	ticker     ticker
+}
+
+type game struct {
+}
+
+type fallingTetromino struct {
+	tetro tetromino
+	x, y  int
+}
+
+type ticker struct {
 	tickerQuit chan struct{}
 	ticker     *time.Ticker
 }
@@ -28,60 +41,67 @@ func NewTetris(w *gtk.ApplicationWindow, da *gtk.DrawingArea) *Tetris {
 }
 
 func (t *Tetris) StartGame() {
-	t.isPlaying = true
+	t.isActive = true
 	rand.Seed(time.Now().UnixNano())
 	t.createNewFallingTetromino()
 
-	t.ticker = time.NewTicker(500 * time.Millisecond)
-	t.tickerQuit = make(chan struct{})
+	t.ticker.ticker = time.NewTicker(500 * time.Millisecond)
+	t.ticker.tickerQuit = make(chan struct{})
 	go func() {
 		for {
 			select {
-			case <-t.ticker.C:
-				t.posY -= 1
+			case <-t.ticker.ticker.C:
+				t.falling.y -= 1
 				t.da.QueueDraw()
 				if t.checkBlockBottomSide() {
 					t.createNewFallingTetromino()
 				}
-			case <-t.tickerQuit:
-				t.isPlaying = false
-				t.ticker.Stop()
+			case <-t.ticker.tickerQuit:
+				t.isActive = false
+				t.ticker.ticker.Stop()
 				return
 			}
 		}
 	}()
 }
 
+func (t *Tetris) quitGame() {
+	if t.isActive {
+		close(t.ticker.tickerQuit) // Stop ticker
+	}
+	t.w.Close() // Close window
+}
+
 func (t *Tetris) adjustPositionAfterRotate() {
 	min, max := 0, 9
 	for y := 0; y < 5; y++ {
 		for x := 0; x < 5; x++ {
-			if !t.current.blocks[y][x] {
+			if !t.falling.tetro.blocks[y][x] {
 				continue
 			}
-			if t.posX+x < min {
-				min = t.posX + x
+			if t.falling.x+x < min {
+				min = t.falling.x + x
 			}
-			if t.posX+x > max {
-				max = t.posX + x
+			if t.falling.x+x > max {
+				max = t.falling.x + x
 			}
 		}
 	}
 
 	if min < 0 {
-		t.posX += -min
+		t.falling.x += -min
 	}
 	if max > 9 {
-		t.posX -= max - 9
+		t.falling.x -= max - 9
 	}
 }
 
 // Drop a new Tetromino
 func (t *Tetris) createNewFallingTetromino() {
 	r := rand.Intn(7)
-	t.current = tetrominos[r]
-	t.posY = 24
-	t.posX = 3
+	t.falling.tetro = tetrominos[r]
+	t.falling.y = 24
+	t.falling.x = 3
 }
 
 // Rotate the 5x5 tetromino array 90 degrees
