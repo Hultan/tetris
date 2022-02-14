@@ -66,6 +66,23 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 
 	cx, cy := g.falling.tetro.getRotationCenter()
 
+	g.rotateTetrominoWithoutCheck(tetro)
+
+	if g.checkOverlapping() {
+		// Replace with counterclockwise rotation
+		g.rotateTetrominoWithoutCheck(tetro)
+		g.rotateTetrominoWithoutCheck(tetro)
+		g.rotateTetrominoWithoutCheck(tetro)
+		return
+	}
+
+	xx, yy := g.falling.tetro.getRotationCenter()
+
+	g.falling.x += cx - xx
+	g.falling.y -= cy - yy
+}
+
+func (g *game) rotateTetrominoWithoutCheck(tetro *tetromino) {
 	// Rotate the tetromino array 90 degrees
 	for y := 0; y < tetrominoHeight/2; y++ {
 		for x := y; x < tetrominoWidth-y-1; x++ {
@@ -76,11 +93,27 @@ func (g *game) rotateTetromino(tetro *tetromino) {
 			tetro.blocks[x][tetrominoWidth-1-y] = tmp
 		}
 	}
+}
 
-	xx, yy := g.falling.tetro.getRotationCenter()
+func (g *game) checkOverlapping() bool {
+	for y := 0; y < tetrominoHeight; y++ {
+		for x := 0; x < tetrominoWidth; x++ {
+			// check if it is a block or not
+			if g.falling.tetro.blocks[y][x] == 0 {
+				continue
+			}
 
-	g.falling.x += cx - xx
-	g.falling.y -= cy - yy
+			x, y := g.falling.x+x, g.falling.y-y
+			if x < 0 || x >= playfieldWidth || y < 0 {
+				return true
+			}
+			if g.playfield[y][x] > 0 {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (g *game) checkPlayfieldLimits(x, y int) bool {
