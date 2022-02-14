@@ -23,30 +23,6 @@ type ticker struct {
 	ticker     *time.Ticker
 }
 
-func (g *game) adjustPositionAfterRotate() {
-	min, max := 0, playfieldWidth-1
-	for y := 0; y < tetrominoHeight; y++ {
-		for x := 0; x < tetrominoWidth; x++ {
-			if g.falling.tetro.blocks[y][x] == 0 {
-				continue
-			}
-			if g.falling.x+x < min {
-				min = g.falling.x + x
-			}
-			if g.falling.x+x > max {
-				max = g.falling.x + x
-			}
-		}
-	}
-
-	if min < 0 {
-		g.falling.x += -min
-	}
-	if max > playfieldWidth-1 {
-		g.falling.x -= max - (playfieldWidth - 1)
-	}
-}
-
 // Drop a new Tetromino
 func (g *game) createNewFallingTetromino() {
 	r := rand.Intn(tetrominoCount)
@@ -213,14 +189,3 @@ func (g *game) dropTetrominoToPlayfield() {
 		g.falling.y -= 1
 	}
 }
-
-//
-// // Debug function : Print the playfield
-// func (g *game) printPlayfield() {
-// 	fmt.Println()
-// 	fmt.Println("----------------")
-// 	fmt.Println()
-// 	for r := 0; r < playfieldHeight; r++ {
-// 		fmt.Println(t.game.playfield[r])
-// 	}
-// }
