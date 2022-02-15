@@ -1,11 +1,12 @@
 package tetris
 
 import (
-	"math/rand"
 	"time"
 
 	"github.com/gotk3/gotk3/gdk"
 	"github.com/gotk3/gotk3/gtk"
+
+	"github.com/hultan/tetris/internal/randomizer"
 )
 
 type Tetris struct {
@@ -23,8 +24,9 @@ func NewTetris(w *gtk.ApplicationWindow, da *gtk.DrawingArea) *Tetris {
 
 func (t *Tetris) StartGame() {
 	t.game = &game{}
+	// TODO : Move to game constructor
 	t.game.isActive = true
-	rand.Seed(time.Now().UnixNano())
+	t.game.rand = randomizer.NewRandomizer(tetrominoCount, queueSize)
 	t.game.createNewFallingTetromino()
 	t.game.speed = 500
 	t.drawingArea.Connect("draw", t.game.onDraw)

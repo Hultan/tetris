@@ -1,8 +1,9 @@
 package tetris
 
 import (
-	"math/rand"
 	"time"
+
+	"github.com/hultan/tetris/internal/randomizer"
 )
 
 type game struct {
@@ -11,6 +12,7 @@ type game struct {
 	playfield [playfieldHeight][playfieldWidth]int
 	falling   fallingTetromino
 	ticker    ticker
+	rand      *randomizer.Randomizer
 }
 
 type fallingTetromino struct {
@@ -25,8 +27,7 @@ type ticker struct {
 
 // Drop a new Tetromino
 func (g *game) createNewFallingTetromino() {
-	r := rand.Intn(tetrominoCount)
-	g.falling.tetro = tetrominos[r]
+	g.falling.tetro = tetrominos[g.rand.Next()]
 	g.falling.y = playfieldVisibleHeight + tetrominoHeight - 1
 	g.falling.x = (playfieldWidth - tetrominoWidth) / 2
 	g.speed -= 10

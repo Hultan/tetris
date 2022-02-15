@@ -16,4 +16,6 @@ const (
 	tetrominoCount  = 7
 	tetrominoWidth  = 4
 	tetrominoHeight = 4
+
+	queueSize = 6
 )
