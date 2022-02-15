@@ -44,14 +44,14 @@ func (g *game) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 	ctx.SetLineWidth(1)
 	for i := 0; i < playfieldWidth; i++ {
 		// Vertical lines
-		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth), topBorder)
-		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth), topBorder+playfieldVisibleHeight*blockHeight)
+		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth)+0.5, topBorder)
+		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth)+0.5, topBorder+playfieldVisibleHeight*blockHeight)
 		ctx.Stroke()
 	}
 	for i := 0; i < playfieldVisibleHeight; i++ {
 		// Horizontal lines
-		ctx.MoveTo(leftBorder, float64(topBorder+(i+1)*blockHeight))
-		ctx.LineTo(leftBorder+10*blockWidth, float64(topBorder+(i+1)*blockHeight))
+		ctx.MoveTo(leftBorder, float64(topBorder+(i+1)*blockHeight)+0.5)
+		ctx.LineTo(leftBorder+10*blockWidth, float64(topBorder+(i+1)*blockHeight)+0.5)
 		ctx.Stroke()
 	}
 }
@@ -101,6 +101,6 @@ func (g *game) drawBlock(_ *gtk.DrawingArea, ctx *cairo.Context, c color.Color, 
 	// Draw black border around block
 	ctx.SetSourceRGBA(0, 0, 0, 1)
 	ctx.SetLineWidth(1)
-	ctx.Rectangle(left, top, blockWidth, blockHeight)
+	ctx.Rectangle(left+0.5, top+0.5, blockWidth, blockHeight)
 	ctx.Stroke()
 }
