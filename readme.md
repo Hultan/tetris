@@ -21,4 +21,4 @@ A simple GTK tetris game
 
 * TODO : Speed (Increase with completed rows/time/dropped tetrominos...)
 * TODO : Score (Increase with completed rows/time/dropped tetrominos...)
- 
+* BUG : Still a rotating bug somewhere
