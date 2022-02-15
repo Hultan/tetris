@@ -12,7 +12,9 @@ func (g *game) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	g.drawBackground(da, ctx)
 	g.drawPlayfield(da, ctx)
 	g.drawFallenTetrominos(da, ctx)
-	g.drawFallingTetromino(da, ctx, g.falling.tetro)
+	left, top := coordsToScreenCoords(g.falling.x, g.falling.y)
+	g.drawTetrominoAt(da, ctx, g.falling.tetro, left, top, false)
+	g.drawQueuedTetrominos(da, ctx)
 }
 
 //
@@ -73,21 +75,22 @@ func (g *game) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 	}
 }
 
-// drawFallingTetromino : Draws the currently falling tetromino
-func (g *game) drawFallingTetromino(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino) {
-	left, top := coordsToScreenCoords(g.falling.x, g.falling.y)
-
+// drawTetrominoAt : Draws the currently falling tetromino at a certain position
+func (g *game) drawTetrominoAt(da *gtk.DrawingArea, ctx *cairo.Context, tetro tetromino, left, top float64, queue bool) float64 {
+	maxY := 0.0
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoHeight; x++ {
 			if tetro.blocks[y][x] == 0 {
 				continue
 			}
-			if g.falling.y-y > playfieldVisibleHeight-1 {
+			if !queue && g.falling.y-y > playfieldVisibleHeight-1 {
 				continue
 			}
+			maxY = top + float64(y)*blockHeight
 			g.drawBlock(da, ctx, tetro.color, left+float64(x)*blockWidth, top+float64(y)*blockHeight)
 		}
 	}
+	return maxY
 }
 
 // drawBlock : Draws a single block
@@ -103,4 +106,32 @@ func (g *game) drawBlock(_ *gtk.DrawingArea, ctx *cairo.Context, c color.Color, 
 	ctx.SetLineWidth(1)
 	ctx.Rectangle(left+0.5, top+0.5, blockWidth, blockHeight)
 	ctx.Stroke()
+}
+
+// drawQueuedTetrominos : Draw the next 6 tetrominos
+func (g *game) drawQueuedTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
+	q := g.rand.Queue()
+
+	y := float64(topBorder)
+	for i := 0; i < len(q); i++ {
+		y = g.drawTetrominoAt(da, ctx, tetrominos[q[i]], 250, y, true) + blockHeight
+	}
+
+	ctx.SetSourceRGBA(1, 1, 1, 1)
+	ctx.MoveTo(225, topBorder+65)
+	ctx.LineTo(230, topBorder+22*blockHeight-10)
+	ctx.MoveTo(235, topBorder+65)
+	ctx.LineTo(230, topBorder+22*blockHeight-10)
+
+	ctx.MoveTo(230, topBorder+60)
+	ctx.LineTo(215, topBorder+75)
+	ctx.MoveTo(230, topBorder+60)
+	ctx.LineTo(245, topBorder+75)
+	ctx.Stroke()
+
+	ctx.SelectFontFace("Roboto Thin", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+	ctx.SetFontSize(20)
+	// ctx.TextExtents("Next")
+	ctx.MoveTo(205, topBorder+45)
+	ctx.ShowText("Next")
 }

@@ -31,6 +31,8 @@ func (g *game) createNewFallingTetromino() {
 	g.falling.y = playfieldVisibleHeight + tetrominoHeight - 1
 	g.falling.x = (playfieldWidth - tetrominoWidth) / 2
 	g.speed -= 10
+
+	g.rand.Print()
 }
 
 // Rotate the 4x4 tetromino array 90 degrees

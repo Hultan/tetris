@@ -1,6 +1,7 @@
 package randomizer
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -44,4 +45,11 @@ func (t *Randomizer) Next() int {
 
 func (t *Randomizer) Queue() []int {
 	return t.next
+}
+
+func (t *Randomizer) Print() {
+	for i := 0; i < t.queueSize; i++ {
+		fmt.Printf("%d", t.next[i])
+	}
+	fmt.Println()
 }
