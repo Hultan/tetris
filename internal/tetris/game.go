@@ -82,11 +82,12 @@ func (g *game) checkOverlapping() bool {
 				continue
 			}
 
-			x, y := g.falling.x+x, g.falling.y-y
-			if x < 0 || x >= playfieldWidth || y < 0 {
+			xx := g.falling.x + x
+			yy := g.falling.y - y
+			if xx < 0 || xx >= playfieldWidth || yy < 0 {
 				return true
 			}
-			if g.playfield[y][x] > 0 {
+			if g.playfield[yy][xx] > 0 {
 				return true
 			}
 		}
