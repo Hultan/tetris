@@ -23,7 +23,8 @@ func NewRandomizer(tetrominoCount, queueSize int) *Randomizer {
 	t.queueSize = queueSize
 	t.tetrominoCount = tetrominoCount
 
-	rand.Seed(time.Now().UnixNano())
+	source := rand.NewSource(time.Now().UnixNano())
+	rand.New(source)
 
 	for i := 0; i < queueSize; i++ {
 		t.next = append(t.next, rand.Intn(tetrominoCount))
