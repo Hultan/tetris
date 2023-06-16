@@ -7,5 +7,5 @@ func col(c uint32) float64 {
 
 // Convert field coords to screen coords
 func screenCoords(x, y int) (float64, float64) {
-	return float64(leftBorder + x*blockWidth), float64(topBorder + (playfieldVisibleHeight-1-y)*blockHeight)
+	return float64(leftBorder + x*blockWidth), float64(topBorder + (fieldVisibleHeight-1-y)*blockHeight)
 }

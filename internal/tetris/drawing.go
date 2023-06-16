@@ -31,7 +31,7 @@ func (g *game) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
 }
 
 // drawField : Draws the playing field
-func (g *game) drawField(da *gtk.DrawingArea, ctx *cairo.Context) {
+func (g *game) drawField(_ *gtk.DrawingArea, ctx *cairo.Context) {
 	// Draw the white background of the playing field
 	ctx.SetSourceRGBA(1, 1, 1, 1)
 	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 22*blockHeight)
@@ -48,13 +48,13 @@ func (g *game) drawField(da *gtk.DrawingArea, ctx *cairo.Context) {
 	// Draw grid lines
 	ctx.SetSourceRGBA(0.5, 0.5, 0.5, 1)
 	ctx.SetLineWidth(1)
-	for i := 0; i < playfieldWidth; i++ {
+	for i := 0; i < fieldWidth; i++ {
 		// Vertical lines
 		ctx.MoveTo(float64(leftBorder+(i+1)*blockWidth)+0.5, topBorder)
-		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth)+0.5, topBorder+playfieldVisibleHeight*blockHeight)
+		ctx.LineTo(float64(leftBorder+(i+1)*blockWidth)+0.5, topBorder+fieldVisibleHeight*blockHeight)
 		ctx.Stroke()
 	}
-	for i := 0; i < playfieldVisibleHeight; i++ {
+	for i := 0; i < fieldVisibleHeight; i++ {
 		// Horizontal lines
 		ctx.MoveTo(leftBorder, float64(topBorder+(i+1)*blockHeight)+0.5)
 		ctx.LineTo(leftBorder+10*blockWidth, float64(topBorder+(i+1)*blockHeight)+0.5)
@@ -64,12 +64,12 @@ func (g *game) drawField(da *gtk.DrawingArea, ctx *cairo.Context) {
 
 // drawFallenTetrominos : Draws the tetrominos that have already fallen to the "ground"
 func (g *game) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
-	for y := 0; y < playfieldVisibleHeight; y++ {
-		for x := 0; x < playfieldVisibleWidth; x++ {
+	for y := 0; y < fieldVisibleHeight; y++ {
+		for x := 0; x < fieldVisibleWidth; x++ {
 			idx := g.field[y][x]
 			if idx > 0 {
 				left, top := screenCoords(x, y)
-				if y >= playfieldLoosingHeight {
+				if y >= fieldLoosingHeight {
 					// Game over
 					g.quit()
 				}
@@ -87,7 +87,7 @@ func (g *game) drawTetrominoAt(da *gtk.DrawingArea, ctx *cairo.Context, tetro te
 			if tetro.blocks[y][x] == 0 {
 				continue
 			}
-			if !queue && g.falling.y-y > playfieldVisibleHeight-1 {
+			if !queue && g.falling.y-y > fieldVisibleHeight-1 {
 				continue
 			}
 			maxY = top + float64(y)*blockHeight

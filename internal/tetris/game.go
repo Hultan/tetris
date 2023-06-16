@@ -9,7 +9,7 @@ import (
 type game struct {
 	speed    time.Duration
 	isActive bool
-	field    [playfieldHeight][playfieldWidth]int
+	field    [fieldHeight][fieldWidth]int
 	falling  fallingTetromino
 	ticker   ticker
 	rand     *randomizer.Randomizer
@@ -28,8 +28,8 @@ type ticker struct {
 // Drop a new Tetromino
 func (g *game) nextTetromino() {
 	g.falling.tetro = tetrominos[g.rand.Next()]
-	g.falling.y = playfieldVisibleHeight + tetrominoHeight - 1
-	g.falling.x = (playfieldWidth - tetrominoWidth) / 2
+	g.falling.y = fieldVisibleHeight + tetrominoHeight - 1
+	g.falling.x = (fieldWidth - tetrominoWidth) / 2
 	g.speed -= 10
 
 	// TODO : Remove, debug only
@@ -85,7 +85,7 @@ func (g *game) checkOverlapping() bool {
 
 			xx := g.falling.x + x
 			yy := g.falling.y - y
-			if xx < 0 || xx >= playfieldWidth || yy < 0 {
+			if xx < 0 || xx >= fieldWidth || yy < 0 {
 				return true
 			}
 			if g.field[yy][xx] > 0 {
@@ -97,14 +97,14 @@ func (g *game) checkOverlapping() bool {
 	return false
 }
 
-func (g *game) checkPlayfieldLimits(x, y int) bool {
-	if x < 0 || x >= playfieldWidth || y < 0 {
+func (g *game) checkFieldLimits(x, y int) bool {
+	if x < 0 || x >= fieldWidth || y < 0 {
 		return false
 	}
 	return g.field[y][x] > 0
 }
 
-func (g *game) checkPlayfieldSides(left bool) bool {
+func (g *game) checkFieldSides(left bool) bool {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
@@ -114,13 +114,13 @@ func (g *game) checkPlayfieldSides(left bool) bool {
 
 			// check if left wall is blocking or
 			// if a piece is blocking to the left
-			if left && (g.falling.x+x == 0 || g.checkPlayfieldLimits(g.falling.x+x-1, g.falling.y-y)) {
+			if left && (g.falling.x+x == 0 || g.checkFieldLimits(g.falling.x+x-1, g.falling.y-y)) {
 				return true
 			}
 
 			// check if right wall is blocking or
 			// if a piece is blocking to the right
-			if !left && (g.falling.x+x == playfieldWidth-1 || g.checkPlayfieldLimits(g.falling.x+x+1, g.falling.y-y)) {
+			if !left && (g.falling.x+x == fieldWidth-1 || g.checkFieldLimits(g.falling.x+x+1, g.falling.y-y)) {
 				return true
 			}
 		}
@@ -129,7 +129,7 @@ func (g *game) checkPlayfieldSides(left bool) bool {
 	return false
 }
 
-func (g *game) checkPlayfieldBottom() bool {
+func (g *game) checkFieldBottom() bool {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			// check if it is a block or not
@@ -138,8 +138,8 @@ func (g *game) checkPlayfieldBottom() bool {
 			}
 
 			// check if floor is blocking
-			if g.falling.y-y == 0 || g.checkPlayfieldLimits(g.falling.x+x, g.falling.y-y-1) {
-				g.moveFallingToPlayfield()
+			if g.falling.y-y == 0 || g.checkFieldLimits(g.falling.x+x, g.falling.y-y-1) {
+				g.moveFallingToField()
 				return true
 			}
 		}
@@ -148,7 +148,7 @@ func (g *game) checkPlayfieldBottom() bool {
 	return false
 }
 
-func (g *game) moveFallingToPlayfield() {
+func (g *game) moveFallingToField() {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			if g.falling.tetro.blocks[y][x] > 0 {
@@ -156,31 +156,31 @@ func (g *game) moveFallingToPlayfield() {
 			}
 		}
 	}
-	g.removeCompletePlayfieldRows()
+	g.removeCompletedRows()
 }
 
-func (g *game) removeCompletePlayfieldRows() {
-	for y := 0; y < playfieldHeight; y++ {
+func (g *game) removeCompletedRows() {
+	for y := 0; y < fieldHeight; y++ {
 		rowComplete := true
-		for x := 0; x < playfieldWidth; x++ {
+		for x := 0; x < fieldWidth; x++ {
 			if g.field[y][x] == 0 {
 				rowComplete = false
 				continue
 			}
 		}
 		if rowComplete {
-			g.deletePlayfieldRow(y)
+			g.deleteFieldRow(y)
 			y -= 1
 		}
 	}
 }
 
-func (g *game) deletePlayfieldRow(d int) {
-	for y := d; y < playfieldHeight; y++ {
-		for x := 0; x < playfieldWidth; x++ {
+func (g *game) deleteFieldRow(d int) {
+	for y := d; y < fieldHeight; y++ {
+		for x := 0; x < fieldWidth; x++ {
 			// To delete a row, copy the value from the row above
 			// except for the top row, who should have zeroes
-			if y == playfieldHeight-1 {
+			if y == fieldHeight-1 {
 				g.field[y][x] = 0
 			} else {
 				g.field[y][x] = g.field[y+1][x]
@@ -189,8 +189,8 @@ func (g *game) deletePlayfieldRow(d int) {
 	}
 }
 
-func (g *game) dropTetrominoToPlayfield() {
-	for !g.checkPlayfieldBottom() {
+func (g *game) dropTetrominoToField() {
+	for !g.checkFieldBottom() {
 		g.falling.y -= 1
 	}
 }
