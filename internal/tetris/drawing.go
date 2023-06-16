@@ -12,8 +12,8 @@ func (g *game) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	g.drawBackground(da, ctx)
 	g.drawField(da, ctx)
 	g.drawFallenTetrominos(da, ctx)
-	left, top := screenCoords(g.falling.x, g.falling.y)
-	g.drawTetrominoAt(da, ctx, g.falling.tetro, left, top, false)
+	x, y := screenCoords(g.falling.x, g.falling.y)
+	g.drawTetrominoAt(da, ctx, g.falling.tetro, x, y, false)
 	g.drawQueuedTetrominos(da, ctx)
 }
 
