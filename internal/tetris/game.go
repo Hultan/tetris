@@ -7,12 +7,12 @@ import (
 )
 
 type game struct {
-	speed     time.Duration
-	isActive  bool
-	playfield [playfieldHeight][playfieldWidth]int
-	falling   fallingTetromino
-	ticker    ticker
-	rand      *randomizer.Randomizer
+	speed    time.Duration
+	isActive bool
+	field    [playfieldHeight][playfieldWidth]int
+	falling  fallingTetromino
+	ticker   ticker
+	rand     *randomizer.Randomizer
 }
 
 type fallingTetromino struct {
@@ -26,12 +26,13 @@ type ticker struct {
 }
 
 // Drop a new Tetromino
-func (g *game) createNewFallingTetromino() {
+func (g *game) nextTetromino() {
 	g.falling.tetro = tetrominos[g.rand.Next()]
 	g.falling.y = playfieldVisibleHeight + tetrominoHeight - 1
 	g.falling.x = (playfieldWidth - tetrominoWidth) / 2
 	g.speed -= 10
 
+	// TODO : Remove, debug only
 	g.rand.Print()
 }
 
@@ -87,7 +88,7 @@ func (g *game) checkOverlapping() bool {
 			if xx < 0 || xx >= playfieldWidth || yy < 0 {
 				return true
 			}
-			if g.playfield[yy][xx] > 0 {
+			if g.field[yy][xx] > 0 {
 				return true
 			}
 		}
@@ -100,7 +101,7 @@ func (g *game) checkPlayfieldLimits(x, y int) bool {
 	if x < 0 || x >= playfieldWidth || y < 0 {
 		return false
 	}
-	return g.playfield[y][x] > 0
+	return g.field[y][x] > 0
 }
 
 func (g *game) checkPlayfieldSides(left bool) bool {
@@ -151,7 +152,7 @@ func (g *game) moveFallingToPlayfield() {
 	for y := 0; y < tetrominoHeight; y++ {
 		for x := 0; x < tetrominoWidth; x++ {
 			if g.falling.tetro.blocks[y][x] > 0 {
-				g.playfield[g.falling.y-y][g.falling.x+x] = g.falling.tetro.id
+				g.field[g.falling.y-y][g.falling.x+x] = g.falling.tetro.id
 			}
 		}
 	}
@@ -162,7 +163,7 @@ func (g *game) removeCompletePlayfieldRows() {
 	for y := 0; y < playfieldHeight; y++ {
 		rowComplete := true
 		for x := 0; x < playfieldWidth; x++ {
-			if g.playfield[y][x] == 0 {
+			if g.field[y][x] == 0 {
 				rowComplete = false
 				continue
 			}
@@ -180,9 +181,9 @@ func (g *game) deletePlayfieldRow(d int) {
 			// To delete a row, copy the value from the row above
 			// except for the top row, who should have zeroes
 			if y == playfieldHeight-1 {
-				g.playfield[y][x] = 0
+				g.field[y][x] = 0
 			} else {
-				g.playfield[y][x] = g.playfield[y+1][x]
+				g.field[y][x] = g.field[y+1][x]
 			}
 		}
 	}

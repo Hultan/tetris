@@ -10,9 +10,9 @@ import (
 // onDraw : The onDraw signal handler
 func (g *game) onDraw(da *gtk.DrawingArea, ctx *cairo.Context) {
 	g.drawBackground(da, ctx)
-	g.drawPlayfield(da, ctx)
+	g.drawField(da, ctx)
 	g.drawFallenTetrominos(da, ctx)
-	left, top := coordsToScreenCoords(g.falling.x, g.falling.y)
+	left, top := screenCoords(g.falling.x, g.falling.y)
 	g.drawTetrominoAt(da, ctx, g.falling.tetro, left, top, false)
 	g.drawQueuedTetrominos(da, ctx)
 }
@@ -30,18 +30,22 @@ func (g *game) drawBackground(da *gtk.DrawingArea, ctx *cairo.Context) {
 	ctx.Fill()
 }
 
-// drawPlayfield : Draws the playfield background
-func (g *game) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
+// drawField : Draws the playing field
+func (g *game) drawField(da *gtk.DrawingArea, ctx *cairo.Context) {
+	// Draw the white background of the playing field
 	ctx.SetSourceRGBA(1, 1, 1, 1)
 	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 22*blockHeight)
 	ctx.Fill()
+	// Draw the warning area of the field
 	ctx.SetSourceRGBA(1, 0.5, 0, 0.5)
 	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 5*blockHeight)
 	ctx.Fill()
+	// Draw the danger area of the field
 	ctx.SetSourceRGBA(1, 0, 0, 0.5)
 	ctx.Rectangle(leftBorder, topBorder, 10*blockWidth, 2*blockHeight)
 	ctx.Fill()
 
+	// Draw grid lines
 	ctx.SetSourceRGBA(0.5, 0.5, 0.5, 1)
 	ctx.SetLineWidth(1)
 	for i := 0; i < playfieldWidth; i++ {
@@ -58,13 +62,13 @@ func (g *game) drawPlayfield(da *gtk.DrawingArea, ctx *cairo.Context) {
 	}
 }
 
-// drawFallenTetrominos : Draws the tetrominos the have already fallen to the "ground"
+// drawFallenTetrominos : Draws the tetrominos that have already fallen to the "ground"
 func (g *game) drawFallenTetrominos(da *gtk.DrawingArea, ctx *cairo.Context) {
 	for y := 0; y < playfieldVisibleHeight; y++ {
 		for x := 0; x < playfieldVisibleWidth; x++ {
-			idx := g.playfield[y][x]
+			idx := g.field[y][x]
 			if idx > 0 {
-				left, top := coordsToScreenCoords(x, y)
+				left, top := screenCoords(x, y)
 				if y >= playfieldLoosingHeight {
 					// Game over
 					g.quit()

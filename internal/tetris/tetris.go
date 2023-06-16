@@ -10,14 +10,14 @@ import (
 )
 
 type Tetris struct {
-	window      *gtk.ApplicationWindow
-	drawingArea *gtk.DrawingArea
+	window *gtk.ApplicationWindow
+	da     *gtk.DrawingArea
 
 	game *game
 }
 
 func NewTetris(w *gtk.ApplicationWindow, da *gtk.DrawingArea) *Tetris {
-	t := &Tetris{window: w, drawingArea: da}
+	t := &Tetris{window: w, da: da}
 	t.window.Connect("key-press-event", t.onKeyPressed)
 	return t
 }
@@ -27,9 +27,9 @@ func (t *Tetris) StartGame() {
 	// TODO : Move to game constructor
 	t.game.isActive = true
 	t.game.rand = randomizer.NewRandomizer(tetrominoCount, queueSize)
-	t.game.createNewFallingTetromino()
+	t.game.nextTetromino()
 	t.game.speed = 500
-	t.drawingArea.Connect("draw", t.game.onDraw)
+	t.da.Connect("draw", t.game.onDraw)
 
 	t.game.ticker.ticker = time.NewTicker(t.game.speed * time.Millisecond)
 	t.game.ticker.tickerQuit = make(chan struct{})
@@ -41,9 +41,9 @@ func (t *Tetris) mainLoop() {
 	for {
 		select {
 		case <-t.game.ticker.ticker.C:
-			t.drawingArea.QueueDraw()
+			t.da.QueueDraw()
 			if t.game.checkPlayfieldBottom() {
-				t.game.createNewFallingTetromino()
+				t.game.nextTetromino()
 			}
 			t.game.falling.y -= 1
 		case <-t.game.ticker.tickerQuit:
@@ -77,10 +77,10 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 	case gdk.KEY_S, gdk.KEY_s, gdk.KEY_Down: // Button "S" => Move tetromino down
 		if t.game.isActive {
 			t.game.dropTetrominoToPlayfield()
-			t.game.createNewFallingTetromino()
+			t.game.nextTetromino()
 		}
 	}
-	t.drawingArea.QueueDraw()
+	t.da.QueueDraw()
 }
 
 func (g *game) quit() {
