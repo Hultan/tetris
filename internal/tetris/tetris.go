@@ -59,22 +59,22 @@ func (t *Tetris) onKeyPressed(_ *gtk.ApplicationWindow, e *gdk.Event) {
 	key := gdk.EventKeyNewFromEvent(e)
 
 	switch key.KeyVal() {
-	case 97: // Button "A" => Move tetromino left
+	case gdk.KEY_Q, gdk.KEY_q: // Button "Q" => Quit game
+		t.game.quit()
+		t.window.Close() // Close window
+	case gdk.KEY_A, gdk.KEY_a, gdk.KEY_Left: // Button "A" => Move tetromino left
 		if t.game.isActive && !t.game.checkPlayfieldSides(true) {
 			t.game.falling.x -= 1
 		}
-	case 113: // Button "Q" => Quit game
-		t.game.quit()
-		t.window.Close() // Close window
-	case 115: // Button "S" => Rotate tetromino
+	case gdk.KEY_W, gdk.KEY_w, gdk.KEY_Up: // Button "W" => Rotate tetromino
 		if t.game.isActive {
 			t.game.rotateTetromino(&t.game.falling.tetro)
 		}
-	case 100: // Button "D" => Move tetromino right
+	case gdk.KEY_D, gdk.KEY_d, gdk.KEY_Right: // Button "D" => Move tetromino right
 		if t.game.isActive && !t.game.checkPlayfieldSides(false) {
 			t.game.falling.x += 1
 		}
-	case 120: // Button "X" => Move tetromino down
+	case gdk.KEY_S, gdk.KEY_s, gdk.KEY_Down: // Button "S" => Move tetromino down
 		if t.game.isActive {
 			t.game.dropTetrominoToPlayfield()
 			t.game.createNewFallingTetromino()
